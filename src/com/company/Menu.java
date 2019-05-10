@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class Menu {
 
     private int menuId;
-    private ArrayList<String> plates;
+    private ArrayList<String> mainDish;
     private ArrayList<String> desserts;
     private ArrayList<String> drinks;
 
@@ -17,12 +17,12 @@ public class Menu {
         this.menuId = menuId;
     }
 
-    public ArrayList<String> getPlates() {
-        return plates;
+    public ArrayList<String> getMainDish() {
+        return mainDish;
     }
 
-    public void setPlates(ArrayList<String> plates) {
-        this.plates = plates;
+    public void setMainDish(ArrayList<String> mainDish) {
+        this.mainDish = mainDish;
     }
 
     public ArrayList<String> getDesserts() {
@@ -39,5 +39,13 @@ public class Menu {
 
     public void setDrinks(ArrayList<String> drinks) {
         this.drinks = drinks;
+    }
+
+    public Menu(int menuId) {
+        this.menuId = menuId;
+        this.mainDish = new ArrayList<>();
+        this.drinks = new ArrayList<>();
+        this.desserts = new ArrayList<>();
+
     }
 }

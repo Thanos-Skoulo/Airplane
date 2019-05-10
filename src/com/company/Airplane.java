@@ -49,11 +49,21 @@ public class Airplane {
         this.businessClassRows = businessClassRows;
     }
 
+
     public Airplane(int airplaneID, int rows, int columns, int businessClassRows, String airplaneDescription) {
         this.airplaneID = airplaneID;
         this.rows = rows;
         this.columns = columns;
         this.businessClassRows = businessClassRows;
         this.airplaneDescription = airplaneDescription;
+    }
+
+    @Override
+    public String toString() {
+        return "Airplane { Id = " + getAirplaneID()
+                                 + ", Rows = " + getRows()
+                                 + ", Columns = " + getColumns()
+                                 + ", Business Class Rows = " + getBusinessClassRows()
+                                 + ", Airplane Description = " + getAirplaneDescription() + " }";
     }
 }

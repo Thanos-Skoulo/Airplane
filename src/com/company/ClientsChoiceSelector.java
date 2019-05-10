@@ -6,8 +6,8 @@ import java.util.Scanner;
 public class ClientsChoiceSelector {
 
     private static final int ADD = 1;
-    private ArrayList<Airplane> airplaneList = new ArrayList<>();
-    private ArrayList<Menu> menuListId = new ArrayList<>();
+    private ArrayList<Airplane> airplanes = new ArrayList<>();
+    private ArrayList<Menu> menues = new ArrayList<>();
 
     public int caseSelector(){
 
@@ -29,7 +29,7 @@ public class ClientsChoiceSelector {
     }
 
     private void printAirplanesSelected() {
-      for(Airplane airplane : airplaneList)
+      for(Airplane airplane : airplanes)
           System.out.println(airplane.toString());
     }
 
@@ -39,7 +39,7 @@ public class ClientsChoiceSelector {
 
         boolean airplaneExists = false;
 
-        for (Airplane airplane : airplaneList) {
+        for (Airplane airplane : airplanes) {
 
             if (airplaneId == airplane.getAirplaneID()) {
                 airplaneExists = true;
@@ -57,7 +57,7 @@ public class ClientsChoiceSelector {
             System.out.println("please write a description about this airplane");
             String airplaneDescription = scanner.next();
             Airplane newAirplane = new Airplane(airplaneId, numberOfRows, numberOfColumns, numberOfBusinessClassRows, airplaneDescription);
-            airplaneList.add(newAirplane);
+            airplanes.add(newAirplane);
         }else{
             System.out.println("this airplane already exists");
         }
@@ -68,7 +68,7 @@ public class ClientsChoiceSelector {
         int menuId = scanner.nextInt();
         boolean menuExists = false;
 
-        for(Menu menu : menuListId){
+        for(Menu menu : menues){
             if(menuId == menu.getMenuId()) {
                 menuExists = true;
             }

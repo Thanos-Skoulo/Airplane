@@ -1,5 +1,6 @@
 package com.company;
 
+
 public class Client {
 
     public static void main(String[] args) {
@@ -12,6 +13,7 @@ public class Client {
     }
 
     private static void showUserOptions() {
+
         System.out.println("[1] Insert Airplane");
         System.out.println("[2] Insert Menu");
         System.out.println("[3] Insert flight");

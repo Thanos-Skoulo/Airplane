@@ -11,7 +11,7 @@ public class Flight {
     private String departureAirport;
     private String arrivalAirport;
     private Airplane airplane;
-    private int seatmenuId;
+    private int seatMenuId;
     private int totalSeatNumber;
     private int bookedSeats;
     private Seat[][] seatTable;
@@ -64,12 +64,12 @@ public class Flight {
         this.airplane = airplane;
     }
 
-    public int getSeatmenuId() {
-        return seatmenuId;
+    public int getSeatMenuId() {
+        return seatMenuId;
     }
 
-    public void setSeatmenuId(int seatmenuId) {
-        this.seatmenuId = seatmenuId;
+    public void setSeatMenuId(int seatMenuId) {
+        this.seatMenuId = seatMenuId;
     }
 
     public int getTotalSeatNumber() {

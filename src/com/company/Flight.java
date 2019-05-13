@@ -95,4 +95,27 @@ public class Flight {
     public void setSeatTable(Seat[][] seatTable) {
         this.seatTable = seatTable;
     }
+
+    public Flight(Airplane airplane) {
+        this.airplane = airplane;
+        this.flightDate = getFlightDate();
+    }
+
+    public Flight(int flightId, LocalDate flightDate, Airplane airplane) {
+        this.flightId = flightId;
+        this.flightDate = flightDate;
+        this.airplane = airplane;
+    }
+
+//    public Flight(){
+//        this.flightId = getFlightId();
+//        this.flightDate = getFlightDate();
+//        this.airplane = getAirplane();
+//    }
+
+
+    @Override
+    public String toString() {
+        return "[" + flightId + "]" + " date of flight: " + getFlightDate().toString() + "airplane:" + getAirplane().getAirplaneID();
+    }
 }

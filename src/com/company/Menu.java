@@ -48,4 +48,16 @@ public class Menu {
         this.desserts = new ArrayList<>();
 
     }
+
+    public Menu(int menuId, ArrayList<String> mainDish, ArrayList<String> desserts, ArrayList<String> drinks) {
+        this.menuId = menuId;
+        this.mainDish = mainDish;
+        this.desserts = desserts;
+        this.drinks = drinks;
+    }
+
+    @Override
+    public String toString() {
+        return "[ " + menuId + " ] " + "dishes: " + mainDish + " desserts: " + desserts + " drinks: " + drinks;
+    }
 }

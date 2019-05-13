@@ -1,5 +1,7 @@
 package com.company;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -8,6 +10,8 @@ class ClientsChoiceSelector {
     private static final int ADD = 1;
     private ArrayList<Airplane> airplanes = new ArrayList<>();
     private ArrayList<Menu> menues = new ArrayList<>();
+    private ArrayList<Flight> flights = new ArrayList<>();
+    private ArrayList<LocalDate> datesOfFlights = new ArrayList<>();
 
     int caseSelector(){
 
@@ -22,8 +26,18 @@ class ClientsChoiceSelector {
             case 2:
                 choice.menuOptionSelected(scanner);
                 break;
+            case 3:
+                choice.insertFlightSelected(scanner);
+                break;
+            case 4:
+                choice.removeFlightSelected(scanner);
             case 9:
                 choice.printAirplanesSelected();
+                break;
+            case 10:
+                choice.printMenuesSelected();
+
+
         }
 
         return clientsChoice;
@@ -34,10 +48,9 @@ class ClientsChoiceSelector {
     
     private class Choice {
 
-        private void printAirplanesSelected() {
-            for(Airplane airplane : airplanes)
-                System.out.println(airplane.toString());
-        }
+
+
+
         
         private void airplaneOptionSelected(Scanner scanner) {
             System.out.println("please insert the airplane's ID");
@@ -119,10 +132,100 @@ class ClientsChoiceSelector {
                     }
                     System.out.println("to add another drink in this list press 1 else press 2 to stop");
                 }
+                Menu newMenu = new Menu(menuId,menu.getMainDish(),menu.getDesserts(),menu.getDrinks());
+                menues.add(newMenu);
 
             } else {
                 System.out.println("this menu already exits");
             }
         }
+
+        private void insertFlightSelected(Scanner scanner){
+
+            System.out.println("Please insert flight's ID");
+            int flightId = scanner.nextInt();
+            boolean flightExists=false;
+            for(Flight flight : flights){
+                if(flightId == flight.getFlightId()){
+                    flightExists =true;
+                }
+            }
+            if(!flightExists){
+                System.out.println("Please insert airplane's ID of the airplane you want to add to this flight");
+                boolean airplaneExists = false;
+                int airplaneId;
+
+                do {
+                    airplaneId =scanner.nextInt();
+
+                    for (Airplane airplane : airplanes) {
+                        if (airplaneId == airplane.getAirplaneID()) {
+                            airplaneExists = true;
+
+                        }
+
+                    }
+                    if(!airplaneExists){
+                        System.out.println("this airplane doesn't exist");
+                    }
+                }while (!airplaneExists);
+
+                System.out.println("please insert the date for this flight");
+                DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("M/d/yyyy");
+                LocalDate date = LocalDate.parse(scanner.next(), dateFormat);
+                Flight newFlight = new Flight(flightId,date,airplanes.get(airplaneId-1));
+
+                boolean airplaneHasAFlightThisDay = false;
+
+//                for(int i = 0;i < flights.size(); i++ ){
+//
+//                    if(flights.get(i).getAirplane().getAirplaneID() == airplaneId){
+//                        for(i = 0; i< flights.size(); i++){
+//                            if(flights.get(i).getFlightDate().toString().equals(date.toString())){
+//                                airplaneHasAflightThisDay = true;
+//                            }
+//                        }
+//                    }
+                for(Flight flight : flights){
+                    if(flight.getAirplane().getAirplaneID() == airplaneId && flight.getFlightDate().toString().equals(date.toString())){
+                        airplaneHasAFlightThisDay = true;
+                    }
+                }
+                if(airplaneHasAFlightThisDay){
+                    System.out.println("this airplane  already has a flight for this day ");
+
+                }else{
+                    flights.add(newFlight);
+                    for(Flight flight : flights) {
+                        System.out.println(flights.toString());
+                        System.out.println(" ");
+                    }
+                }
+
+            }else{ System.out.println("this flight already exists"); }
+
+        }
+
+        private void removeFlightSelected(Scanner scanner) {
+
+            System.out.println("Choose which fight to remove by typing its ID");
+            int flightIdToRemove = scanner.nextInt();
+            
+
+
+        }
+
+        private void printAirplanesSelected() {
+            for(Airplane airplane : airplanes)
+                System.out.println(airplane.toString());
+        }
+
+        private void printMenuesSelected() {
+            for(Menu menu: menues){
+                System.out.println(menu.toString());
+            }
+        }
+
+
     }
 }

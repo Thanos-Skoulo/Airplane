@@ -1,15 +1,21 @@
 package com.company;
 
 
+import java.util.Scanner;
+
 public class Client {
 
     public static void main(String[] args) {
         int exit = 0;
 
         ClientsChoiceSelector selector = new ClientsChoiceSelector();
+        Scanner scanner = new Scanner(System.in);
+
         do {
             showUserOptions();
-        } while (selector.caseSelector() != exit);
+        } while (selector.caseSelector(scanner) != exit);
+
+        scanner.close();
     }
 
     private static void showUserOptions() {

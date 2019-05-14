@@ -96,26 +96,59 @@ public class Flight {
         this.seatTable = seatTable;
     }
 
-    public Flight(Airplane airplane) {
-        this.airplane = airplane;
-        this.flightDate = getFlightDate();
-    }
-
     public Flight(int flightId, LocalDate flightDate, Airplane airplane) {
         this.flightId = flightId;
         this.flightDate = flightDate;
         this.airplane = airplane;
+
+        this.seatTable = new Seat[airplane.getBusinessClassRows()+airplane.getRows()][airplane.getColumns()];
+        for(int i=0; i<airplane.getBusinessClassRows() + airplane.getRows(); i++){
+            for(int j=0; j<airplane.getColumns(); j++){
+                if(i < airplane.getBusinessClassRows())
+                    seatTable[i][j] = new BusinessSeat(i*airplane.getColumns()+j, i, j);
+                else
+                    seatTable[i][j] = new EconomySeat(i*airplane.getColumns() +j, i, j);
+            }
+        }
     }
 
-//    public Flight(){
-//        this.flightId = getFlightId();
-//        this.flightDate = getFlightDate();
-//        this.airplane = getAirplane();
-//    }
 
 
     @Override
     public String toString() {
         return "[" + flightId + "]" + " date of flight: " + getFlightDate().toString() + "airplane:" + getAirplane().getAirplaneID();
+    }
+
+    public void printSeatTable() {
+        for(int i=0; i<airplane.getRows()+airplane.getBusinessClassRows();i++){
+            for(int j=0;j<airplane.getColumns(); j++){
+                System.out.print(seatTable[i][j].toString());
+            }
+            System.out.println();
+        }
+    }
+
+    public boolean IsSeatAvailable(int seatId) {
+        for(int i=0; i< getAirplane().getRows()+ getAirplane().getBusinessClassRows();i++){
+            for(int j=0;j< getAirplane().getColumns(); j++){
+                if(seatId == seatTable[i][j].getSeatId()){
+                    return seatTable[i][j].isAvailable();
+                }
+            }
+        }
+        return false;
+    }
+
+    public Seat bookSeat(int seatId) {
+        for(int i=0; i< getAirplane().getRows()+ getAirplane().getBusinessClassRows();i++){
+            for(int j=0;j< getAirplane().getColumns(); j++){
+                if(seatId -1 == seatTable[i][j].getSeatId()){
+                     seatTable[i][j].setAvailable(false);
+                     return seatTable[i][j];
+                }
+            }
+        }
+
+        return null;
     }
 }

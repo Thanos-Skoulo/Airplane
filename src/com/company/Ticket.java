@@ -13,6 +13,12 @@ public class Ticket {
     private LocalDate dateOfIssue;
     private String chosenPlate;
     private String chosenDessert;
+    private String chosenDrink;
+
+    public Ticket(int ticketId,int flightId){
+        this.ticketId = ticketId;
+        this.flightId = flightId;
+    }
 
     public int getTicketId() {
         return ticketId;
@@ -94,7 +100,6 @@ public class Ticket {
         this.chosenDrink = chosenDrink;
     }
 
-    private String chosenDrink;
 
 
 

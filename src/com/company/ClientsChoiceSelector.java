@@ -8,14 +8,21 @@ import java.util.Scanner;
 class ClientsChoiceSelector {
 
     private static final int ADD = 1;
-    private ArrayList<Airplane> airplanes = new ArrayList<>();
     private ArrayList<Menu> menues = new ArrayList<>();
-    private ArrayList<Flight> flights = new ArrayList<>();
     private ArrayList<LocalDate> datesOfFlights = new ArrayList<>();
 
-    int caseSelector(){
+    private FlightManager flightManager;
+    private AirplaneManager airplaneManager;
+    private TicketManager ticketManager;
 
-        Scanner scanner = new Scanner(System.in);
+    public ClientsChoiceSelector() {
+        this.flightManager = new FlightManager();
+        this.airplaneManager = new AirplaneManager();
+        this.ticketManager = new TicketManager();
+    }
+
+    int caseSelector(Scanner scanner){
+
         int clientsChoice = scanner.nextInt();
         Choice choice = new Choice();
 
@@ -31,11 +38,20 @@ class ClientsChoiceSelector {
                 break;
             case 4:
                 choice.removeFlightSelected(scanner);
+                break;
+            case 5:
+                choice.bookTicketSelected(scanner);
+                break;
+            case 8:
+                choice.seatsCapacitySelected(scanner);
             case 9:
                 choice.printAirplanesSelected();
                 break;
             case 10:
                 choice.printMenuesSelected();
+                break;
+            case 11:
+                choice.printFlightsSelected();
 
 
         }
@@ -51,22 +67,12 @@ class ClientsChoiceSelector {
 
 
 
-        
         private void airplaneOptionSelected(Scanner scanner) {
             System.out.println("please insert the airplane's ID");
             int airplaneId = scanner.nextInt();
 
-            boolean airplaneExists = false;
 
-            for (Airplane airplane : airplanes) {
-
-                if (airplaneId == airplane.getAirplaneID()) {
-                    airplaneExists = true;
-                }
-
-            }
-
-            if (!airplaneExists) {
+            if (!airplaneManager.airplaneExists(airplaneId)) {
                 System.out.println("please insert the number of rows");
                 int numberOfRows = scanner.nextInt();
                 System.out.println("please insert the number of columns");
@@ -76,7 +82,7 @@ class ClientsChoiceSelector {
                 System.out.println("please write a description about this airplane");
                 String airplaneDescription = scanner.next();
                 Airplane newAirplane = new Airplane(airplaneId, numberOfRows, numberOfColumns, numberOfBusinessClassRows, airplaneDescription);
-                airplanes.add(newAirplane);
+                airplaneManager.getAirplanes().add(newAirplane);
             } else {
                 System.out.println("this airplane already exists");
             }
@@ -144,62 +150,37 @@ class ClientsChoiceSelector {
 
             System.out.println("Please insert flight's ID");
             int flightId = scanner.nextInt();
-            boolean flightExists=false;
-            for(Flight flight : flights){
-                if(flightId == flight.getFlightId()){
-                    flightExists =true;
-                }
-            }
-            if(!flightExists){
+
+            if(!flightManager.flightExists(flightId)){
                 System.out.println("Please insert airplane's ID of the airplane you want to add to this flight");
-                boolean airplaneExists = false;
+                boolean airplaneExists;
                 int airplaneId;
+
 
                 do {
                     airplaneId =scanner.nextInt();
+                    airplaneExists = airplaneManager.airplaneExists(airplaneId);
 
-                    for (Airplane airplane : airplanes) {
-                        if (airplaneId == airplane.getAirplaneID()) {
-                            airplaneExists = true;
 
-                        }
 
-                    }
                     if(!airplaneExists){
                         System.out.println("this airplane doesn't exist");
+                        System.out.println("please reinsert airplane's ID ");
                     }
+
                 }while (!airplaneExists);
 
                 System.out.println("please insert the date for this flight");
                 DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("M/d/yyyy");
                 LocalDate date = LocalDate.parse(scanner.next(), dateFormat);
-                Flight newFlight = new Flight(flightId,date,airplanes.get(airplaneId-1));
+                Flight newFlight = new Flight(flightId,date,airplaneManager.getAirplanes().get(airplaneId-1));
 
-                boolean airplaneHasAFlightThisDay = false;
-
-//                for(int i = 0;i < flights.size(); i++ ){
-//
-//                    if(flights.get(i).getAirplane().getAirplaneID() == airplaneId){
-//                        for(i = 0; i< flights.size(); i++){
-//                            if(flights.get(i).getFlightDate().toString().equals(date.toString())){
-//                                airplaneHasAflightThisDay = true;
-//                            }
-//                        }
-//                    }
-                for(Flight flight : flights){
-                    if(flight.getAirplane().getAirplaneID() == airplaneId && flight.getFlightDate().toString().equals(date.toString())){
-                        airplaneHasAFlightThisDay = true;
-                    }
-                }
-                if(airplaneHasAFlightThisDay){
+                if(flightManager.airplaneHasAFlightThisDay(airplaneId,date)){
                     System.out.println("this airplane  already has a flight for this day ");
 
                 }else{
-                    flights.add(newFlight);
-                    for(Flight flight : flights) {
-                        System.out.println(flights.toString());
-                        System.out.println(" ");
-                    }
+                    flightManager.getFlights().add(newFlight);
+
                 }
 
             }else{ System.out.println("this flight already exists"); }
@@ -210,13 +191,11 @@ class ClientsChoiceSelector {
 
             System.out.println("Choose which fight to remove by typing its ID");
             int flightIdToRemove = scanner.nextInt();
-            
-
 
         }
 
         private void printAirplanesSelected() {
-            for(Airplane airplane : airplanes)
+            for(Airplane airplane : airplaneManager.getAirplanes())
                 System.out.println(airplane.toString());
         }
 
@@ -227,5 +206,46 @@ class ClientsChoiceSelector {
         }
 
 
+        private void printFlightsSelected() {
+            for(Flight flight : flightManager.getFlights()) {
+                System.out.println(flight.toString());
+            }
+        }
+
+        void seatsCapacitySelected(Scanner scanner) {
+            System.out.println("please insert flight's ID");
+            int flightId = scanner.nextInt();
+            if(flightManager.flightExists(flightId)){
+               flightManager.printSeatTable(flightId);
+            }else{
+                System.out.println("this flight doesn't exist");
+            }
+
+        }
+
+        void bookTicketSelected(Scanner scanner) {
+            System.out.println("please insert flight's ID");
+
+            int flightId = scanner.nextInt();
+            if(flightManager.flightExists(flightId)){
+                flightManager.printSeatTable(flightId);
+                System.out.println("please insert the id of the seat that you want");
+                int seatId = scanner.nextInt();
+                if(flightManager.isSeatAvailable(seatId,flightId)){
+                    Seat bookedSeat = flightManager.bookSeat(seatId,flightId);
+                    boolean isBusinessSeat = bookedSeat instanceof BusinessSeat;
+
+                    Ticket ticket = new Ticket(seatId,flightId);
+                    ticketManager.create(ticket,scanner,isBusinessSeat);
+
+
+                    flightManager.printSeatTable(flightId);
+                }
+
+            }
+
+
+
+        }
     }
 }

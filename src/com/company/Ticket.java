@@ -101,7 +101,8 @@ public class Ticket {
     }
 
 
-
-
-
+    @Override
+    public String toString() {
+        return "[" + ticketId + "] " + "(NAME: " + passengersName + ", PRICE: " +ticketPrice + ") ";
+    }
 }

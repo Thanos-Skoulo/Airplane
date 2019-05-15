@@ -131,7 +131,7 @@ public class Flight {
     public boolean IsSeatAvailable(int seatId) {
         for(int i=0; i< getAirplane().getRows()+ getAirplane().getBusinessClassRows();i++){
             for(int j=0;j< getAirplane().getColumns(); j++){
-                if(seatId == seatTable[i][j].getSeatId()){
+                if(seatId-1 == seatTable[i][j].getSeatId()){
                     return seatTable[i][j].isAvailable();
                 }
             }
@@ -145,6 +145,19 @@ public class Flight {
                 if(seatId -1 == seatTable[i][j].getSeatId()){
                      seatTable[i][j].setAvailable(false);
                      return seatTable[i][j];
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public Seat removeSeat(int seatId) {
+        for(int i=0; i< getAirplane().getRows()+ getAirplane().getBusinessClassRows();i++){
+            for(int j=0;j< getAirplane().getColumns(); j++){
+                if(seatId -1 == seatTable[i][j].getSeatId()){
+                    seatTable[i][j].setAvailable(true);
+                    return seatTable[i][j];
                 }
             }
         }

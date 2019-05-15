@@ -40,7 +40,7 @@ public class FlightManager {
         return airplaneHasAFlightThisDay;
     }
 
-    public void printSeatTable (int flightId){
+    void printSeatTable(int flightId){
         for(Flight flight : flights){
             if(flight.getFlightId() == flightId){
                 flight.printSeatTable();
@@ -49,7 +49,7 @@ public class FlightManager {
     }
 
 
-    public boolean isSeatAvailable(int seatId, int flightId) {
+    boolean isSeatAvailable(int seatId, int flightId) {
 
         for(Flight flight : flights){
             if(flight.getFlightId() == flightId){
@@ -60,7 +60,7 @@ public class FlightManager {
         return false;
     }
 
-    public Seat bookSeat(int seatId, int flightId) {
+    Seat bookSeat(int seatId, int flightId) {
 
         for(Flight flight : flights){
             if(flight.getFlightId() == flightId){
@@ -70,5 +70,31 @@ public class FlightManager {
         }
         return null;
 
+    }
+
+
+    void removeFlight(int flightIdToRemove) {
+
+        for(Flight flight : flights){
+            if (flightIdToRemove == flight.getFlightId()){
+                flights.remove(flight);
+                System.out.println(flights.toString());
+            }
+
+        }
+    }
+
+    void addFlight(Flight newFlight) {
+            flights.add(newFlight);
+    }
+
+    Seat removeSeat(int seatId, int flightId) {
+        for(Flight flight : flights){
+            if(flight.getFlightId() == flightId){
+                return flight.removeSeat(seatId);
+
+            }
+        }
+        return null;
     }
 }

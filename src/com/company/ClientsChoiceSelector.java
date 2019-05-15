@@ -7,18 +7,18 @@ import java.util.Scanner;
 
 class ClientsChoiceSelector {
 
-    private static final int ADD = 1;
-    private ArrayList<Menu> menues = new ArrayList<>();
     private ArrayList<LocalDate> datesOfFlights = new ArrayList<>();
 
     private FlightManager flightManager;
     private AirplaneManager airplaneManager;
     private TicketManager ticketManager;
+    private MenuManager menuManager;
 
-    public ClientsChoiceSelector() {
+    ClientsChoiceSelector() {
         this.flightManager = new FlightManager();
         this.airplaneManager = new AirplaneManager();
         this.ticketManager = new TicketManager();
+        this.menuManager = new MenuManager();
     }
 
     int caseSelector(Scanner scanner){
@@ -27,6 +27,7 @@ class ClientsChoiceSelector {
         Choice choice = new Choice();
 
         switch (clientsChoice) {
+
             case 1:
                 choice.airplaneOptionSelected(scanner);
                 break;
@@ -42,18 +43,24 @@ class ClientsChoiceSelector {
             case 5:
                 choice.bookTicketSelected(scanner);
                 break;
+            case 6:
+                choice.cancelTicketSelected(scanner);
+                break;
+            case 7:
+                choice.orderMenuItemSelected(scanner);
+                break;
             case 8:
                 choice.seatsCapacitySelected(scanner);
+                break;
             case 9:
                 choice.printAirplanesSelected();
                 break;
             case 10:
-                choice.printMenuesSelected();
+                choice.printMenusSelected();
                 break;
             case 11:
                 choice.printFlightsSelected();
-
-
+                break;
         }
 
         return clientsChoice;
@@ -91,55 +98,16 @@ class ClientsChoiceSelector {
         private void menuOptionSelected(Scanner scanner) {
             System.out.println("please insert the menu's ID");
             int menuId = scanner.nextInt();
-            boolean menuExists = false;
 
-            for (Menu menu : menues) {
-                if (menuId == menu.getMenuId()) {
-                    menuExists = true;
-                }
-            }
+            if (!menuManager.menuExists(menuId)) {
 
-            if (!menuExists) {
+                Menu menu = menuManager.create(menuId);
 
-                Menu menu = new Menu(menuId);
-                System.out.println("Add as many main plates as you want");
+                menuManager.addDishes(menu,scanner);
+                menuManager.addDesserts(menu,scanner);
+                menuManager.addDrinks(menu,scanner);
 
-                menu.getMainDish().add(scanner.next());
-
-
-                System.out.println("to add another dish in this list press 1 else press 2 to stop");
-                while (scanner.nextInt() == ADD) {
-                    String newDish = scanner.next();
-                    if (!menu.getMainDish().contains(newDish)) {
-                        menu.getMainDish().add(newDish);
-                    }
-                    System.out.println("to add another dish in this list press 1 else press 2 to stop");
-                }
-
-                System.out.println("now add as many desserts aw you want");
-                menu.getDesserts().add(scanner.next());
-                System.out.println("to add another dessert in this list press 1 else press 2 to stop");
-                while (scanner.nextInt() == ADD) {
-                    String newDessert = scanner.next();
-                    if (!menu.getDesserts().contains(newDessert)) {
-                        menu.getDesserts().add(newDessert);
-                    }
-                    System.out.println("to add another dessert in this list press 1 else press 2 to stop");
-                }
-
-                System.out.println("now it's time to add some drinks");
-                menu.getDrinks().add(scanner.next());
-                System.out.println("to add another drink in this list press 1 else press 2 to stop");
-
-                while (scanner.nextInt() == ADD) {
-                    String newDrink = scanner.next();
-                    if (!menu.getDesserts().contains(newDrink)) {
-                        menu.getDesserts().add(newDrink);
-                    }
-                    System.out.println("to add another drink in this list press 1 else press 2 to stop");
-                }
-                Menu newMenu = new Menu(menuId,menu.getMainDish(),menu.getDesserts(),menu.getDrinks());
-                menues.add(newMenu);
+                menuManager.addMenu(menu);
 
             } else {
                 System.out.println("this menu already exits");
@@ -179,8 +147,7 @@ class ClientsChoiceSelector {
                     System.out.println("this airplane  already has a flight for this day ");
 
                 }else{
-                    flightManager.getFlights().add(newFlight);
-
+                    flightManager.addFlight(newFlight);
                 }
 
             }else{ System.out.println("this flight already exists"); }
@@ -191,18 +158,20 @@ class ClientsChoiceSelector {
 
             System.out.println("Choose which fight to remove by typing its ID");
             int flightIdToRemove = scanner.nextInt();
+            flightManager.removeFlight(flightIdToRemove);
+
 
         }
 
         private void printAirplanesSelected() {
-            for(Airplane airplane : airplaneManager.getAirplanes())
-                System.out.println(airplane.toString());
+
+            airplaneManager.printAirplanes();
+
         }
 
-        private void printMenuesSelected() {
-            for(Menu menu: menues){
-                System.out.println(menu.toString());
-            }
+        private void printMenusSelected() {
+            menuManager.printMenus();
+
         }
 
 
@@ -237,13 +206,52 @@ class ClientsChoiceSelector {
 
                     Ticket ticket = new Ticket(seatId,flightId);
                     ticketManager.create(ticket,scanner,isBusinessSeat);
-
-
                     flightManager.printSeatTable(flightId);
+                }else {
+                    System.out.println("this seat is already taken");
                 }
+            }
+        }
 
+        void cancelTicketSelected(Scanner scanner) {
+            System.out.println("please insert flight's ID you want to cancel a ticket from");
+            int flightId = scanner.nextInt();
+            flightManager.printSeatTable(flightId);
+            System.out.println("please insert the id of the ticket you want to remove");
+            int seatId = scanner.nextInt();
+            if(!flightManager.isSeatAvailable(seatId,flightId)){
+                ticketManager.removeTicket(seatId);
+                flightManager.removeSeat(seatId,flightId);
+                flightManager.printSeatTable(flightId);
+            }else{
+                System.out.println("this seat is already available");
             }
 
+        }
+
+        void orderMenuItemSelected(Scanner scanner) {
+            System.out.println("please insert the flight you want to choose a seat to order a menu");
+            int flightId = scanner.nextInt();
+            if(flightManager.flightExists(flightId)) {
+                System.out.println("ok! now insert the seat id");
+                int seatId = scanner.nextInt();
+                boolean isBusinessSeat = flightManager.bookSeat(seatId,flightId) instanceof BusinessSeat;
+
+                if(isBusinessSeat){
+                    System.out.println("now choose a menu from the list");
+                    menuManager.printMenus();
+                    int menuSelected = scanner.nextInt();
+
+                    System.out.println("you choose dish: " + menuManager.selectDish(menuSelected,scanner)
+                                        +  ", drink: " + menuManager.selectDrinks(menuSelected,scanner)
+                                        + ", dessert: " + menuManager.selectDessert(menuSelected,scanner));
+
+                }else{
+                    System.out.println("this is not a business seat");
+                }
+            }else {
+                System.out.println("this flight doesn't exist");
+            }
 
 
         }

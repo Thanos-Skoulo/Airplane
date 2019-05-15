@@ -32,10 +32,8 @@ public class AirplaneManager {
     }
 
 
-
-
-
-
-
-
+    public void printAirplanes() {
+        for(Airplane airplane : airplanes)
+            System.out.println(airplane.toString());
+    }
 }

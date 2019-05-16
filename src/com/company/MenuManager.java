@@ -11,7 +11,13 @@ class MenuManager {
 
     private ArrayList<Menu> menus = new ArrayList<>();
 
+    public ArrayList<Menu> getMenus() {
+        return menus;
+    }
 
+    public void setMenus(ArrayList<Menu> menus) {
+        this.menus = menus;
+    }
 
     Menu create(int menuId) {
         Menu menu = new Menu(menuId);
@@ -37,7 +43,7 @@ class MenuManager {
         menu.getMainDish().add(scanner.next());
 
         System.out.println("to add another dish in this list press 1 else press 2 to stop");
-        while (scanner.nextInt() == ADD) {
+        while ( Validator.requestInt(scanner) == ADD) {
             String newDish = scanner.next();
             if (!menu.getMainDish().contains(newDish)) {
                 menu.getMainDish().add(newDish);
@@ -52,7 +58,7 @@ class MenuManager {
         System.out.println("now add as many desserts aw you want");
         menu.getDesserts().add(scanner.next());
         System.out.println("to add another dessert in this list press 1 else press 2 to stop");
-        while (scanner.nextInt() == ADD) {
+        while ( Validator.requestInt(scanner) == ADD) {
             String newDessert = scanner.next();
             if (!menu.getDesserts().contains(newDessert)) {
                 menu.getDesserts().add(newDessert);
@@ -68,7 +74,7 @@ class MenuManager {
         menu.getDrinks().add(scanner.next());
         System.out.println("to add another drink in this list press 1 else press 2 to stop");
 
-        while (scanner.nextInt() == ADD) {
+        while ( Validator.requestInt(scanner) == ADD) {
             String newDrink = scanner.next();
             if (!menu.getDrinks().contains(newDrink)) {
                 menu.getDrinks().add(newDrink);
@@ -93,13 +99,13 @@ class MenuManager {
         System.out.println(menus.get(menuSelected-1).getMainDish().toString());
         System.out.println("choose a main dish from the list above");
 
-        return menus.get(menuSelected-1).getMainDish().get(scanner.nextInt()-1);
+        return menus.get(menuSelected-1).getMainDish().get( Validator.requestInt(scanner)-1);
     }
 
     String selectDessert(int menuSelected, Scanner scanner){
         System.out.println(menus.get(menuSelected-1).getDesserts().toString());
         System.out.println("choose a main dish from the list above");
-        return menus.get(menuSelected-1).getDesserts().get(scanner.nextInt()-1);
+        return menus.get(menuSelected-1).getDesserts().get( Validator.requestInt(scanner)-1);
 
     }
 
@@ -107,6 +113,6 @@ class MenuManager {
         System.out.println(menus.get(menuSelected-1).getDrinks().toString());
         System.out.println("choose a main dish from the list above");
 
-        return menus.get(menuSelected-1).getDrinks().get(scanner.nextInt()-1);
+        return menus.get(menuSelected-1).getDrinks().get( Validator.requestInt(scanner)-1);
     }
 }

@@ -16,7 +16,7 @@ public class TicketManager {
         ticket.setPassengersName(passengersName);
         ticket.setDateOfIssue(LocalDate.now());
         System.out.println("please insert ticket's price");
-        ticket.setTicketPrice(scanner.nextInt());
+        ticket.setTicketPrice( Validator.requestInt(scanner));
 
         tickets.add(ticket);
         for(Ticket ticket1 : tickets) {

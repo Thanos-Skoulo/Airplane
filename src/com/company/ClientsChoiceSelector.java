@@ -1,13 +1,18 @@
 package com.company;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import java.io.FileWriter;
+import java.io.IOException;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+//import java.util.ArrayList;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 class ClientsChoiceSelector {
 
-    private ArrayList<LocalDate> datesOfFlights = new ArrayList<>();
+//    private ArrayList<LocalDate> datesOfFlights = new ArrayList<>();
 
     private FlightManager flightManager;
     private AirplaneManager airplaneManager;
@@ -23,10 +28,14 @@ class ClientsChoiceSelector {
 
     int caseSelector(Scanner scanner){
 
-        int clientsChoice = scanner.nextInt();
+        int clientsChoice =  Validator.requestInt(scanner);
         Choice choice = new Choice();
 
         switch (clientsChoice) {
+
+            case 0:
+                choice.exitSelected();
+                break;
 
             case 1:
                 choice.airplaneOptionSelected(scanner);
@@ -66,9 +75,11 @@ class ClientsChoiceSelector {
         return clientsChoice;
     }
 
-   
+    public void LoadWithAirplanes(ArrayList<Airplane> airplanes) {
+        airplaneManager.setAirplanes(airplanes);
+    }
 
-    
+
     private class Choice {
 
 
@@ -76,20 +87,25 @@ class ClientsChoiceSelector {
 
         private void airplaneOptionSelected(Scanner scanner) {
             System.out.println("please insert the airplane's ID");
-            int airplaneId = scanner.nextInt();
+            int airplaneId = Validator.requestInt(scanner);
 
 
             if (!airplaneManager.airplaneExists(airplaneId)) {
                 System.out.println("please insert the number of rows");
-                int numberOfRows = scanner.nextInt();
+                int numberOfRows =  Validator.requestInt(scanner);
+
                 System.out.println("please insert the number of columns");
-                int numberOfColumns = scanner.nextInt();
+                int numberOfColumns =  Validator.requestInt(scanner);
                 System.out.println("now insert the number of Business Class rows");
-                int numberOfBusinessClassRows = scanner.nextInt();
-                System.out.println("please write a description about this airplane");
-                String airplaneDescription = scanner.next();
-                Airplane newAirplane = new Airplane(airplaneId, numberOfRows, numberOfColumns, numberOfBusinessClassRows, airplaneDescription);
-                airplaneManager.getAirplanes().add(newAirplane);
+                int numberOfBusinessClassRows =  Validator.requestInt(scanner);
+                if(numberOfColumns == 0 || numberOfBusinessClassRows == 0 && numberOfRows == 0){
+                    System.out.println("You cannot create an airplane without any seats");
+                }else {
+                    System.out.println("please write a description about this airplane");
+                    String airplaneDescription = scanner.next();
+                    Airplane newAirplane = new Airplane(airplaneId, numberOfRows, numberOfColumns, numberOfBusinessClassRows, airplaneDescription);
+                    airplaneManager.getAirplanes().add(newAirplane);
+                }
             } else {
                 System.out.println("this airplane already exists");
             }
@@ -97,7 +113,7 @@ class ClientsChoiceSelector {
 
         private void menuOptionSelected(Scanner scanner) {
             System.out.println("please insert the menu's ID");
-            int menuId = scanner.nextInt();
+            int menuId =  Validator.requestInt(scanner);
 
             if (!menuManager.menuExists(menuId)) {
 
@@ -116,8 +132,10 @@ class ClientsChoiceSelector {
 
         private void insertFlightSelected(Scanner scanner){
 
+            LocalDate date;
+
             System.out.println("Please insert flight's ID");
-            int flightId = scanner.nextInt();
+            int flightId =  Validator.requestInt(scanner);
 
             if(!flightManager.flightExists(flightId)){
                 System.out.println("Please insert airplane's ID of the airplane you want to add to this flight");
@@ -126,10 +144,8 @@ class ClientsChoiceSelector {
 
 
                 do {
-                    airplaneId =scanner.nextInt();
+                    airplaneId = Validator.requestInt(scanner);
                     airplaneExists = airplaneManager.airplaneExists(airplaneId);
-
-
 
                     if(!airplaneExists){
                         System.out.println("this airplane doesn't exist");
@@ -139,8 +155,10 @@ class ClientsChoiceSelector {
                 }while (!airplaneExists);
 
                 System.out.println("please insert the date for this flight");
-                DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("M/d/yyyy");
-                LocalDate date = LocalDate.parse(scanner.next(), dateFormat);
+                do{
+                    date = Validator.requestDate(scanner);
+                }while (!Validator.isAFutureDate(date));
+
                 Flight newFlight = new Flight(flightId,date,airplaneManager.getAirplanes().get(airplaneId-1));
 
                 if(flightManager.airplaneHasAFlightThisDay(airplaneId,date)){
@@ -157,7 +175,7 @@ class ClientsChoiceSelector {
         private void removeFlightSelected(Scanner scanner) {
 
             System.out.println("Choose which fight to remove by typing its ID");
-            int flightIdToRemove = scanner.nextInt();
+            int flightIdToRemove =  Validator.requestInt(scanner);
             flightManager.removeFlight(flightIdToRemove);
 
 
@@ -183,7 +201,7 @@ class ClientsChoiceSelector {
 
         void seatsCapacitySelected(Scanner scanner) {
             System.out.println("please insert flight's ID");
-            int flightId = scanner.nextInt();
+            int flightId =  Validator.requestInt(scanner);
             if(flightManager.flightExists(flightId)){
                flightManager.printSeatTable(flightId);
             }else{
@@ -195,17 +213,19 @@ class ClientsChoiceSelector {
         void bookTicketSelected(Scanner scanner) {
             System.out.println("please insert flight's ID");
 
-            int flightId = scanner.nextInt();
+            int flightId =  Validator.requestInt(scanner);
+            int seatId;
             if(flightManager.flightExists(flightId)){
                 flightManager.printSeatTable(flightId);
                 System.out.println("please insert the id of the seat that you want");
-                int seatId = scanner.nextInt();
-                if(flightManager.isSeatAvailable(seatId,flightId)){
-                    Seat bookedSeat = flightManager.bookSeat(seatId,flightId);
-                    boolean isBusinessSeat = bookedSeat instanceof BusinessSeat;
 
-                    Ticket ticket = new Ticket(seatId,flightId);
-                    ticketManager.create(ticket,scanner,isBusinessSeat);
+                seatId = Validator.requestInt(scanner);
+
+                if(flightManager.isSeatAvailable(seatId,flightId)) {
+                    Seat bookedSeat = flightManager.bookSeat(seatId, flightId);
+                    boolean isBusinessSeat = bookedSeat instanceof BusinessSeat;
+                    Ticket ticket = new Ticket(seatId, flightId);
+                    ticketManager.create(ticket, scanner, isBusinessSeat);
                     flightManager.printSeatTable(flightId);
                 }else {
                     System.out.println("this seat is already taken");
@@ -215,10 +235,10 @@ class ClientsChoiceSelector {
 
         void cancelTicketSelected(Scanner scanner) {
             System.out.println("please insert flight's ID you want to cancel a ticket from");
-            int flightId = scanner.nextInt();
+            int flightId =  Validator.requestInt(scanner);
             flightManager.printSeatTable(flightId);
             System.out.println("please insert the id of the ticket you want to remove");
-            int seatId = scanner.nextInt();
+            int seatId =  Validator.requestInt(scanner);
             if(!flightManager.isSeatAvailable(seatId,flightId)){
                 ticketManager.removeTicket(seatId);
                 flightManager.removeSeat(seatId,flightId);
@@ -231,27 +251,47 @@ class ClientsChoiceSelector {
 
         void orderMenuItemSelected(Scanner scanner) {
             System.out.println("please insert the flight you want to choose a seat to order a menu");
-            int flightId = scanner.nextInt();
+            int flightId =  Validator.requestInt(scanner);
             if(flightManager.flightExists(flightId)) {
                 System.out.println("ok! now insert the seat id");
-                int seatId = scanner.nextInt();
+                int seatId =  Validator.requestInt(scanner);
                 boolean isBusinessSeat = flightManager.bookSeat(seatId,flightId) instanceof BusinessSeat;
 
                 if(isBusinessSeat){
+
                     System.out.println("now choose a menu from the list");
                     menuManager.printMenus();
-                    int menuSelected = scanner.nextInt();
+                    int menuSelected =  Validator.requestInt(scanner);
+                    if(menuManager.menuExists(menuSelected)) {
 
-                    System.out.println("you choose dish: " + menuManager.selectDish(menuSelected,scanner)
-                                        +  ", drink: " + menuManager.selectDrinks(menuSelected,scanner)
-                                        + ", dessert: " + menuManager.selectDessert(menuSelected,scanner));
-
+                        System.out.println("you choose dish: " + menuManager.selectDish(menuSelected, scanner)
+                                + ", drink: " + menuManager.selectDrinks(menuSelected, scanner)
+                                + ", dessert: " + menuManager.selectDessert(menuSelected, scanner));
+                    }else{
+                        System.out.println("this menu does not exist");
+                    }
                 }else{
                     System.out.println("this is not a business seat");
                 }
             }else {
                 System.out.println("this flight doesn't exist");
             }
+
+
+        }
+
+
+        public void exitSelected() {
+
+            State state = new State(airplaneManager.getAirplanes(), flightManager.getFlights(), menuManager.getMenus());
+
+           try
+                   (FileWriter fileWriter = new FileWriter("AirplaneExerciseState.json")){
+               Gson gson = new GsonBuilder().setPrettyPrinting().create();
+               gson.toJson(state, fileWriter);
+           }catch (IOException ex){
+               System.out.println("something went wrong");
+           }
 
 
         }

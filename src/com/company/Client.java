@@ -1,14 +1,37 @@
 package com.company;
 
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
+
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Client {
 
     public static void main(String[] args) {
         int exit = 0;
+        Gson gson = new Gson();
+        ArrayList<Airplane> airplanes = new ArrayList<>();
+        try (JsonReader reader = new JsonReader(new FileReader("Airplanes.json"))) {
+            airplanes = gson.fromJson(reader,new TypeToken<ArrayList<Airplane>>(){}.getType());
+            System.out.println(airplanes.toString());
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         ClientsChoiceSelector selector = new ClientsChoiceSelector();
+
+        if(airplanes.size() > 0)
+            selector.LoadWithAirplanes(airplanes);
+
+
         Scanner scanner = new Scanner(System.in);
 
         do {
